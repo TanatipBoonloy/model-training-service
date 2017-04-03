@@ -1,0 +1,13 @@
+# Spring boot project configuration
+spring:
+  application:
+    name: sp-model-training-service
+  profiles:
+    active: production
+  main:
+    # Disable embed tomcat
+    web-environment: true
+  messages:
+    basename: messages
+    cache-seconds: -1
+    encoding: utf-8
