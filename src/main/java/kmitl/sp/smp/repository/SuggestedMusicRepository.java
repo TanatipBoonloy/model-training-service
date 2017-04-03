@@ -70,4 +70,10 @@ public interface SuggestedMusicRepository extends CrudRepository<SuggestedMusic,
             "on music_info.id = listen_info.music_id\n" +
             "order by music_id", nativeQuery = true)
     List<Object[]> getAttributesObjects(int userId);
+
+    @Query(value = "select id from music_information where id not in (\n" +
+            "select music_id from `user-music` where user_id = ?1 group by music_id\n" +
+            "UNION\n" +
+            "select music_id from suggested_music where user_id = ?1 group by music_id ) ", nativeQuery = true)
+    List<String> getUserUnknownMusicIds(int userId);
 }

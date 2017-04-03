@@ -30,6 +30,6 @@ public class Controller {
 
     @RequestMapping(value = "suggested/{userId}")
     public ApiBaseResponse<?> getSuggestedSong(@PathVariable String userId) {
-        return new ApiBaseResponse<>(HttpStatus.OK, controllerService.trainNewUserModelProfile(userId));
+        return new ApiBaseResponse<>(HttpStatus.OK, controllerService.getUserSuggestedMusic(userId));
     }
 }

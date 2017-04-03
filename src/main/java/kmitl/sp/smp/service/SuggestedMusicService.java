@@ -11,4 +11,8 @@ public interface SuggestedMusicService {
     List<SuggestedMusic> getSuggestedMusicByUserId(int userId);
 
     List<Object[]> getAttributeObjects(int userId);
+
+    List<String> getUnknownMusics(int userId);
+
+    Iterable<SuggestedMusic> saveSuggestedList(int userId,List<String> musicIds);
 }
