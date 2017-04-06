@@ -23,7 +23,7 @@ public class NeuralNetworkServiceImp implements NeuralNetworkService {
     private final double learningRate = 0.2;
 
     @Override
-    public List<String> getSuggestedSong(List<Object[]> attributes, UserModel userModel,List<String> musicIds) {
+    public List<String> getSuggestedSong(List<Object[]> attributes, UserModel userModel, List<String> musicIds) {
         double[][] w12 = userModel.getW12();
         double[][] w23 = userModel.getW23();
 
@@ -31,7 +31,7 @@ public class NeuralNetworkServiceImp implements NeuralNetworkService {
         double[] l2 = new double[outputNodeSize];
 
         List<String> suggestedList = new ArrayList<>();
-        for(int dataIter = 0 ; dataIter < attributes.size() && suggestedList.size() < 8; dataIter ++) {
+        for (int dataIter = 0; dataIter < attributes.size() && suggestedList.size() < 8; dataIter++) {
 
             // calculate l1 output
             for (int i = 0; i < hiddenNodeSize; i++) {
@@ -49,7 +49,7 @@ public class NeuralNetworkServiceImp implements NeuralNetworkService {
                 l2[i] = sigmoid(l2[i]);
             }
 
-            if(l2[0] >= l2[1]) {
+            if (l2[0] > l2[1]) {
                 suggestedList.add(musicIds.get(dataIter));
             }
         }
@@ -101,6 +101,9 @@ public class NeuralNetworkServiceImp implements NeuralNetworkService {
                 double[] l2Err = new double[outputNodeSize];
                 double[] l1Err = new double[hiddenNodeSize];
 
+                double[] l2Delta = new double[outputNodeSize];
+                double[] l1Delta = new double[hiddenNodeSize];
+
                 // calculate l1 output
                 for (int i = 0; i < hiddenNodeSize; i++) {
                     for (int j = 0; j < inputNodeSize; j++) {
@@ -121,23 +124,30 @@ public class NeuralNetworkServiceImp implements NeuralNetworkService {
 
                 // calculate l2 error
                 for (int i = 0; i < outputNodeSize; i++) {
-//                    l2Err[i] = derivSigmoid((double) attributes.get(dataIter)[dataSize - (2 - i)] - l2[i]);
-                    l2Err[i] = derivSigmoid((getDoubleFromObject(attributes.get(dataIter)[dataSize - (2 - i)]) - l2[i]));
+                    l2Err[i] = (getDoubleFromObject(attributes.get(dataIter)[dataSize - (2 - i)]) - l2[i]);
+                }
+
+                // calculate l2 delta
+                for (int i = 0; i < outputNodeSize; i++) {
+                    l2Delta[i] = l2Err[i] * derivSigmoid(l2[i]);
                 }
 
                 // calculate l1 error
                 for (int i = 0; i < hiddenNodeSize; i++) {
                     for (int j = 0; j < outputNodeSize; j++) {
-                        l1Err[i] += (l2Err[j] * w23[i][j]);
+                        l1Err[i] += (l2Delta[j] * w23[i][j]);
                     }
-                    l1Err[i] = derivSigmoid(l1Err[i]);
+                }
+
+                // calculate l1 delta
+                for (int i = 0; i < hiddenNodeSize; i++) {
+                    l1Delta[i] = l1Err[i] * derivSigmoid(l1[i]);
                 }
 
                 // train weight w12
                 for (int i = 0; i < inputNodeSize; i++) {
                     for (int j = 0; j < hiddenNodeSize; j++) {
-//                        w12[i][j] += learningRate * l1Err[j] * (double) attributes.get(dataIter)[i];
-                        w12[i][j] += (learningRate * l1Err[j] * getDoubleFromObject(attributes.get(dataIter)[i]));
+                        w12[i][j] += (learningRate * l1Delta[j] * getDoubleFromObject(attributes.get(dataIter)[i]));
                     }
                 }
 

@@ -26,7 +26,7 @@ public class Controller {
         return true;
     }
 
-    @RequestMapping(value = "suggested/{userId}")
+    @RequestMapping(value = "suggested/{userId}", method = RequestMethod.GET)
     public ApiBaseResponse<?> getSuggestedSong(@PathVariable String userId) {
         return new ApiBaseResponse<>(HttpStatus.OK, controllerService.getUserSuggestedMusic(userId));
     }
